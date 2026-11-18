@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Token Launch Radar — pre-token protocols, ranked by implied value</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <p class="kicker">TOKEN LAUNCH RADAR</p>
+    <h1>Which pre-token protocol would be worth the most — if its record stayed as it is?</h1>
+    <p class="lede" id="lede">Loading the sealed snapshot…</p>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="stats" id="stats" aria-label="Coverage"></section>
+
+  <nav class="tabs" aria-label="Views">
+    <button type="button" data-tab="board" class="tab active">Pre-token board</button>
+    <button type="button" data-tab="live" class="tab">Live tokens</button>
+    <button type="button" data-tab="method" class="tab">Method</button>
+  </nav>
+
+  <section id="view-board" class="view">
+    <div class="controls">
+      <label class="ctl">Search
+        <input id="q" type="search" placeholder="Protocol name or slug…" autocomplete="off">
+      </label>
+      <label class="ctl">Category
+        <select id="category"><option value="all">All categories</option></select>
+      </label>
+      <label class="ctl">Chain
+        <select id="chain"><option value="all">All chains</option></select>
+      </label>
+      <label class="ctl check"><input id="watchonly" type="checkbox"> Watchlist only</label>
+      <button type="button" id="clear" class="btn">Clear filters</button>
+    </div>
+    <p class="count" id="count"></p>
+    <div class="tablewrap">
+      <table id="board">
+        <thead>
+          <tr>
+            <th><button type="button" data-sort="rank">Rank</button></th>
+            <th><button type="button" data-sort="name">Protocol</button></th>
+            <th><button type="button" data-sort="category">Category</button></th>
+            <th>Chains</th>
+            <th><button type="button" data-sort="tvl">TVL</button></th>
+            <th><button type="button" data-sort="growth">7d</button></th>
+            <th><button type="button" data-sort="implied">Implied value</button></th>
+            <th><button type="button" data-sort="comps">Comps ×</button></th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+    <p class="hint">Click any row for its detail view: the four model factors and the seven-step farm plan.</p>
+  </section>
+
+  <section id="view-live" class="view" hidden>
+    <p class="lede">These protocols already trade, so the board shows the market's own value for them — never a model number. They are the comps the pre-token board is priced against.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Protocol</th><th>Category</th><th>Chains</th><th>TVL</th><th>Market cap</th><th>FDV / TVL</th></tr></thead>
+        <tbody id="live-rows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="view-method" class="view" hidden>
+    <h2>How the number is built</h2>
+    <p class="lede" id="formula"></p>
+    <ol class="factors">
+      <li><b>Comps.</b> The median FDV/TVL of live-token protocols in the same category, taken from this snapshot. A category with fewer than 3 live comps falls back to the snapshot-wide median. No protocol name is ever special-cased.</li>
+      <li><b>Scale.</b> (TVL / $1M)^-0.1, clamped to [0.40, 0.95]. Value grows sublinearly with TVL: a $10B protocol is not worth 100× a $100M one.</li>
+      <li><b>Growth.</b> 1 + 0.45 × tanh(clamped 7-day TVL change / 60). A +400% week is worth at most +45%; a −80% week costs at most −39%. Unknown change scores 1.00.</li>
+      <li><b>Maturity.</b> 0.55 + 0.45 × (1 − exp(−age / 730 days)). A protocol that held value tokenless for years has proven it can do so without a token. Unknown age scores 0.75.</li>
+    </ol>
+    <h3>Comps by category</h3>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Category</th><th>Live comps</th><th>Median FDV / TVL</th></tr></thead>
+        <tbody id="comps-rows"></tbody>
+      </table>
+    </div>
+    <h3>What this is not</h3>
+    <p class="lede">Implied value is this entry's own claim, never make.fun's. “Records no token” means the snapshot's record carries no token — a protocol on the list may still have one its record misses. Nothing here predicts whether or when a token launches, and no farm step promises one.</p>
+  </section>
+
+  <aside id="detail" class="detail" hidden aria-label="Protocol detail"></aside>
+</main>
+
+<footer class="wrap foot">
+  <p>Token Launch Radar · model comps-1 · snapshot as of <span id="asof"></span> · source: DefiLlama public protocols endpoint · Built for the make.fun token-radar-01 bounty.</p>
+</footer>
+
+<script src="../data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
